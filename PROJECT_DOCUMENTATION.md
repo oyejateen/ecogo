@@ -49,7 +49,7 @@ The application is built using the following technologies:
 - **Image Detail** (`app/image-detail.tsx`): Detailed view of a discovery with species information
 - **Settings** (`app/settings.tsx`): App configuration, privacy settings, and account management
 
-## Services & Integrations
+## Services & Integration
 
 ### Authentication Service
 
