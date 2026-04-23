@@ -1,12 +1,13 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import { AuthProvider, useAuth } from '../src/contexts/AuthContext';
 
-import { useColorScheme } from '@/components/useColorScheme';
+import { useColorScheme } from '../src/components/useColorScheme';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -20,6 +21,47 @@ export const unstable_settings = {
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+// This function redirects users based on their authentication status
+function useProtectedRoute(user: any) {
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    const inAuthGroup = segments[0] === '(auth)';
+    const inTabsGroup = segments[0] === '(tabs)';
+
+    if (!user && !inAuthGroup) {
+      // If the user is not signed in and the initial segment is not in the auth group
+      router.replace('/(auth)/welcome');
+    } else if (user && inAuthGroup) {
+      // If the user is signed in and the initial segment is in the auth group
+      router.replace('/(tabs)');
+    }
+  }, [user, segments, router]);
+}
+
+function RootLayoutNav() {
+  const { user } = useAuth();
+  const colorScheme = useColorScheme();
+  
+  // Use the protected route hook
+  useProtectedRoute(user);
+
+  return (
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <Stack>
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="camera" options={{ headerShown: false, presentation: 'fullScreenModal' }} />
+        <Stack.Screen name="image-preview" options={{ headerShown: false, presentation: 'fullScreenModal' }} />
+        <Stack.Screen name="image-detail" options={{ headerShown: false }} />
+        <Stack.Screen name="ai-review" options={{ headerShown: false }} />
+        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+      </Stack>
+    </ThemeProvider>
+  );
+}
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -42,18 +84,9 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
-    </ThemeProvider>
+    <AuthProvider>
+      <RootLayoutNav />
+    </AuthProvider>
   );
 }

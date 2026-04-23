@@ -1,0 +1,36 @@
+diff --git a/node_modules/nativewind/dist/transformer/index.js b/node_modules/nativewind/dist/transformer/index.js
+index 8f8efd9..6b6b6b2 100644
+--- a/node_modules/nativewind/dist/transformer/index.js
++++ b/node_modules/nativewind/dist/transformer/index.js
+@@ -13,7 +13,7 @@ const transform = async ({ src, filename, options, }) => {
+         const output = await upstreamTransformer.transform({
+             src,
+             filename,
+-            options: options,
++            options: options || {},
+         });
+         if (cssResult && cssResult.cssText) {
+             const css = cssResult.cssText
+diff --git a/node_modules/nativewind/metro-config.js b/node_modules/nativewind/metro-config.js
+new file mode 100644
+index 0000000..f26d31d
+--- /dev/null
++++ b/node_modules/nativewind/metro-config.js
+@@ -0,0 +1,17 @@
++const { getDefaultConfig } = require("metro-config");
++
++module.exports = async (baseConfig = {}) => {
++  const defaultConfig = await getDefaultConfig();
++  
++  return {
++    transformer: {
++      ...defaultConfig.transformer,
++      babelTransformerPath: require.resolve("./dist/babel-transformer"),
++      assetPlugins: ["expo-asset/tools/hashAssetFiles"],
++    },
++    resolver: {
++      ...defaultConfig.resolver,
++      sourceExts: [...defaultConfig.resolver.sourceExts, "css"],
++    },
++  };
++}; 
