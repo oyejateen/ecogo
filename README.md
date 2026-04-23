@@ -2,6 +2,12 @@
 
 EcoGo is a mobile application for discovering and collecting natural species using AI-powered image recognition. The app allows users to identify plants, animals, and other natural elements through their camera, save them to a personal collection, and share discoveries with the community.
 
+## Demo
+
+
+https://github.com/user-attachments/assets/adc0bfd9-62da-4814-a481-c927525980eb
+
+
 ## Features
 
 - **AI-Powered Species Identification**: Identify plants, animals, and fungi using the camera
